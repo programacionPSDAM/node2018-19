@@ -1,17 +1,10 @@
 var Persona = require ( './persona' );
 var mongoose =  require ( 'mongoose' );
 
-var newPersona = Persona ({
-	_id : 1013,
-	firstName : 'nombre en mongoose' ,
-	lastName : 'apellidos en mongoose' ,
-	email : 'email@dfkñlkñfd.com',
-	gender : 'Female',
-	age : 18
-	//date : new Date()
-});
+var DB = {};
 
-mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
+
+DB.insertarPersona = function (newPersona) {mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
 	if (err) throw err;
 	newPersona.save ( function ( err ) {
 		if ( err ) throw err ;
@@ -19,14 +12,45 @@ mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function 
 		mongoose.connection.close();
 	}) ;
 
-});
+   });
+}
+DB.borrarPersonaPorEmail = function (email) {mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
+	if (err) throw err;
+	Persona.deleteOne ({email : email}, function ( err ) {
+		if ( err ) throw err ;
+		console.log ( " Usuario borrado " ) ;
+		mongoose.connection.close();
+	}) ;
+  });
+}
+DB.buscarPorEmail = function (email, callback) {mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
+	if (err) throw err;
+	Persona.find ({email : email}, function ( err, persona ) {
+		if ( err ) throw err ;
+		callback(err, persona);
+		mongoose.connection.close();
+	}) ;
+  });
+}
 
-//como se cierra la conexión
-//crearlo como módulo para trabajarlo en menu.js
-//
-//
-//
-//
-//
-//
-//
+DB.buscarTodos = function (callback) {mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
+	if (err) throw err;
+	Persona.find ({}, function ( err, personas ) {
+		if ( err ) throw err ;
+	//	console.log(typeof personas);
+		callback(err, personas);
+		mongoose.connection.close();
+	}) ;
+  });
+}
+DB.actualizarEdad = function (email, age) {mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true },function (err) {
+	if (err) throw err;
+	Persona.updateOne ({email : email},{age: age}, function ( err ,res) {
+		if ( err ) throw err ;
+		console.log ( " Nº usuarios actualizados " +  res.modifiedCount) ;
+		mongoose.connection.close();
+	}) ;
+  });
+}
+
+module.exports=DB;
